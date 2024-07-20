@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "mushapp",
+    "slug": "mushapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/mushroom.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.mushapp"
+    },
+    "android": {
+      "package": "com.example.mushapp",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/mushroom.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/mushroom.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "47567600-a469-4773-84f5-4df871d666a3"
+      }
+    }
+  }
+}
