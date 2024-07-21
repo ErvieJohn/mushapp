@@ -59,6 +59,9 @@ const App = () => {
       // FAN
       setIsFanEnable(snapshot.val().fan);
 
+      // HEATER
+      setIsHeaterEnable(snapshot.val().heater);
+
       setLowTemp(val => {
         if (snapshot.val().temp < val || val === 0) {
           return snapshot.val().temp;
