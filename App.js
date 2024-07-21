@@ -35,10 +35,16 @@ const App = () => {
 
   // FAN
   const [isFanEnable, setIsFanEnable] = useState(false);
-
   const toggleFanSwitch = () => {
     set(ref(db, 'fan'), !isFanEnable);
     setIsFanEnable(!isFanEnable);
+  };
+
+  // HEATER
+  const [isHeaterEnable, setIsHeaterEnable] = useState(false);
+  const toggleHeaterSwitch = () => {
+    set(ref(db, 'heater'), !isHeaterEnable);
+    setIsHeaterEnable(!isHeaterEnable);
   };
 
   useEffect(() => {
@@ -213,15 +219,15 @@ const App = () => {
           <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: 5}}>Controls</Text>
         </View>
         {/* Controls view */}
-        <View style={{flexDirection: "column"}}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{flexDirection: "column", maxWidth: 150, minWidth: 150}}>
+          {/* FAN */}
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <View style={{flexDirection: "row", marginRight: "10%"}}>
               <Text style={{fontSize: 16}}>Fan: </Text>
               <Text style={{ color: isFanEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
                 {isFanEnable ? "ON" : "OFF"}
               </Text>
             </View>
-            
 
             <Switch
               trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -229,6 +235,24 @@ const App = () => {
               ios_backgroundColor="#3e3e3e"
               onValueChange={toggleFanSwitch}
               value={isFanEnable}
+            />
+          </View>
+
+          {/* HEATER */}
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View style={{flexDirection: "row", marginRight: "10%"}}>
+              <Text style={{fontSize: 16}}>Heater: </Text>
+              <Text style={{ color: isHeaterEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                {isHeaterEnable ? "ON" : "OFF"}
+              </Text>
+            </View>
+
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor={isHeaterEnable ? '#f5dd4b' : '#f4f3f4'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleHeaterSwitch}
+              value={isHeaterEnable}
             />
           </View>
         </View>
