@@ -8,11 +8,12 @@ import {
   ImageBackground,
   Dimensions,
   Modal,
-  Pressable
+  Pressable,
+  Switch
 } from "react-native";
 import CircleText from "./CircleText";
 import LiquidGauge from "./LiquidGauge";
-import { db, ref, onValue } from "./firebase";
+import { db, ref, onValue, set } from "./firebase";
 import bg from "./assets/bg2.png";
 import { Svg, Path } from "react-native-svg";
 
@@ -32,6 +33,14 @@ const App = () => {
   const [lowCo2, setLowCo2] = useState(0);
   const [co2, setCo2] = useState(0);
 
+  // FAN
+  const [isFanEnable, setIsFanEnable] = useState(false);
+
+  const toggleFanSwitch = () => {
+    set(ref(db, 'fan'), !isFanEnable);
+    setIsFanEnable(!isFanEnable);
+  };
+
   useEffect(() => {
     const data = ref(db);
 
@@ -40,6 +49,9 @@ const App = () => {
       setHumidity(snapshot.val().humid);
       setWater(Math.round(snapshot.val().water));
       setCo2(snapshot.val().co2);
+      
+      // FAN
+      setIsFanEnable(snapshot.val().fan);
 
       setLowTemp(val => {
         if (snapshot.val().temp < val || val === 0) {
@@ -189,13 +201,38 @@ const App = () => {
             70% - 85%
           </Text>
         </View>
-        <View style={{ flex: 1, flexDirection: "row" }}>
+        <View style={{ flex: 0.5, flexDirection: "row" }}>
           <Text>CO2 Range: </Text>
 
           <Text style={{ color: "black", fontWeight: "bold" }}>
             500PPM - 900PPM
           </Text>
         </View>
+
+        <View>
+          <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: 5}}>Controls</Text>
+        </View>
+        {/* Controls view */}
+        <View style={{flexDirection: "column"}}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{flexDirection: "row", marginRight: "10%"}}>
+              <Text style={{fontSize: 16}}>Fan: </Text>
+              <Text style={{ color: isFanEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                {isFanEnable ? "ON" : "OFF"}
+              </Text>
+            </View>
+            
+
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor={isFanEnable ? '#f5dd4b' : '#f4f3f4'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleFanSwitch}
+              value={isFanEnable}
+            />
+          </View>
+        </View>
+        
 
         <View
           style={{
