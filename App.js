@@ -214,7 +214,7 @@ const App = () => {
           <Text>CO2 Range: </Text>
 
           <Text style={{ color: "black", fontWeight: "bold" }}>
-            500PPM - 900PPM
+            500PPM - 1000PPM
           </Text>
         </View>
 
@@ -271,7 +271,7 @@ const App = () => {
           <CircleText text="Humidity" value={humidity+"%"} onRed={humidity < 70 || humidity > 85 ? "" : "red"} />
           
         </View>
-        <CircleText text="CO2" value={co2+" PPM"} onRed={co2 < 500 || co2 > 900 ? "" : "red"}  />
+        <CircleText text="CO2" value={co2+" PPM"} onRed={co2 < 500 || co2 > 1000 ? "" : "red"}  />
           
         
         <View
