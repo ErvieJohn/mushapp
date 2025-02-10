@@ -47,6 +47,49 @@ const App = () => {
     setIsHeaterEnable(!isHeaterEnable);
   };
 
+  // FAN2
+  const [isFan2Enable, setIsFan2Enable] = useState(false);
+  const toggleFan2Switch = () => {
+    set(ref(db, 'fan2'), !isFan2Enable);
+    setIsFan2Enable(!isFan2Enable);
+  };
+
+  // HUMIDIFIER
+  const [isHumidifierEnable, setIsHumidifierEnable] = useState(false);
+  const toggleHumidifierSwitch = () => {
+    set(ref(db, 'humidifier'), !isHumidifierEnable);
+    setIsHumidifierEnable(!isHumidifierEnable);
+  };
+
+  // WATER PUMP
+  const [isWaterPumpEnable, setIsWaterPumpEnable] = useState(false);
+  const toggleWaterPumpSwitch = () => {
+    set(ref(db, 'waterPump'), !isWaterPumpEnable);
+    setIsWaterPumpEnable(!isWaterPumpEnable);
+  };
+
+  // Automatic and Manual
+  const [isAutomaticEnable, setIsAutomaticEnable] = useState(false);
+  const toggleAutomaticSwitch = () => {
+    set(ref(db, 'auto'), !isAutomaticEnable);
+    setIsAutomaticEnable(!isAutomaticEnable);
+
+    set(ref(db, 'fan'), false);
+    setIsFanEnable(false);
+
+    set(ref(db, 'heater'), false);
+    setIsHeaterEnable(false);
+
+    set(ref(db, 'fan2'), false);
+    setIsFan2Enable(false);
+
+    set(ref(db, 'humidifier'), false);
+    setIsHumidifierEnable(false);
+
+    set(ref(db, 'waterPump'), false);
+    setIsWaterPumpEnable(false);
+  };
+
   useEffect(() => {
     const data = ref(db);
 
@@ -55,12 +98,24 @@ const App = () => {
       setHumidity(snapshot.val().humid);
       setWater(Math.round(snapshot.val().water));
       setCo2(snapshot.val().co2);
-      
+
       // FAN
       setIsFanEnable(snapshot.val().fan);
 
       // HEATER
       setIsHeaterEnable(snapshot.val().heater);
+
+      // FAN2
+      setIsFan2Enable(snapshot.val().fan2);
+
+      // HUMIDIFIER
+      setIsHumidifierEnable(snapshot.val().humidifier);
+
+      // WATER PUMP
+      setIsWaterPumpEnable(snapshot.val().waterPump);
+
+      // Automatic
+      setIsAutomaticEnable(snapshot.val().auto);
 
       setLowTemp(val => {
         if (snapshot.val().temp < val || val === 0) {
@@ -108,13 +163,13 @@ const App = () => {
     
   }, [db]);
 
-  useEffect(()=> {
-    if(water >= 13){
-      setModalVisible(true)
-    }else{
-      setModalVisible(false)
-    }
-  }, [water])
+  // useEffect(()=> {
+  //   if(water >= 13){
+  //     setModalVisible(true)
+  //   }else{
+  //     setModalVisible(false)
+  //   }
+  // }, [water])
 
   return (
     <View
@@ -134,9 +189,9 @@ const App = () => {
             justifyContent: "space-between",
             paddingHorizontal: 20,
             alignContent: "center",
-            marginTop: 30,
+            // marginTop: 20,
             backgroundColor: "green",
-            marginBottom: 20,
+            // marginBottom: 5,
             width: screenWidth
           }}
         >
@@ -214,51 +269,133 @@ const App = () => {
           <Text>CO2 Range: </Text>
 
           <Text style={{ color: "black", fontWeight: "bold" }}>
-            500PPM - 1000PPM
+            400PPM - 1000PPM
           </Text>
         </View>
 
         <View>
-          <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: 5}}>Controls</Text>
+          <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: 1}}>Controls</Text>
         </View>
-        {/* Controls view */}
-        <View style={{flexDirection: "column", maxWidth: 150, minWidth: 150}}>
-          {/* FAN */}
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <View style={{flexDirection: "row", marginRight: "10%"}}>
-              <Text style={{fontSize: 16}}>Fan: </Text>
-              <Text style={{ color: isFanEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
-                {isFanEnable ? "ON" : "OFF"}
+              <Text style={{fontSize: 16}}>Automatic: </Text>
+              <Text style={{ color: isAutomaticEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                {isAutomaticEnable ? "ON" : "OFF"}
               </Text>
             </View>
 
             <Switch
               trackColor={{false: '#767577', true: '#81b0ff'}}
-              thumbColor={isFanEnable ? '#f5dd4b' : '#f4f3f4'}
+              thumbColor={isAutomaticEnable ? '#f5dd4b' : '#f4f3f4'}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleFanSwitch}
-              value={isFanEnable}
+              onValueChange={toggleAutomaticSwitch}
+              value={isAutomaticEnable}
             />
           </View>
 
-          {/* HEATER */}
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <View style={{flexDirection: "row", marginRight: "10%"}}>
-              <Text style={{fontSize: 16}}>Heater: </Text>
-              <Text style={{ color: isHeaterEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
-                {isHeaterEnable ? "ON" : "OFF"}
-              </Text>
+        <View style={{flexDirection: "row", maxWidth: 300, minWidth: 300, display: isAutomaticEnable ? "none" : "flex"}}>
+          {/* Controls view */}
+          <View style={{flexDirection: "column", maxWidth: 150, minWidth: 150}}>
+            {/* FAN */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{flexDirection: "row", marginRight: "10%"}}>
+                <Text style={{fontSize: 16}}>Fan: </Text>
+                <Text style={{ color: isFanEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                  {isFanEnable ? "ON" : "OFF"}
+                </Text>
+              </View>
+
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isFanEnable ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleFanSwitch}
+                value={isFanEnable}
+                disabled={isAutomaticEnable}
+              />
             </View>
 
-            <Switch
-              trackColor={{false: '#767577', true: '#81b0ff'}}
-              thumbColor={isHeaterEnable ? '#f5dd4b' : '#f4f3f4'}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleHeaterSwitch}
-              value={isHeaterEnable}
-            />
+            {/* HEATER */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{flexDirection: "row", marginRight: "10%"}}>
+                <Text style={{fontSize: 16}}>Heater: </Text>
+                <Text style={{ color: isHeaterEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                  {isHeaterEnable ? "ON" : "OFF"}
+                </Text>
+              </View>
+
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isHeaterEnable ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleHeaterSwitch}
+                value={isHeaterEnable}
+                disabled={isAutomaticEnable}
+              />
+            </View>
           </View>
+
+          <View style={{flexDirection: "column", maxWidth: 150, minWidth: 150}}>
+            {/* FAN2 */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{flexDirection: "row", marginRight: "10%"}}>
+                <Text style={{fontSize: 16}}>Fan2: </Text>
+                <Text style={{ color: isFan2Enable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                  {isFan2Enable ? "ON" : "OFF"}
+                </Text>
+              </View>
+
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isFan2Enable ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleFan2Switch}
+                value={isFan2Enable}
+                disabled={isAutomaticEnable}
+              />
+            </View>
+
+            {/* Humidifier */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{flexDirection: "row", marginRight: "10%"}}>
+                <Text style={{fontSize: 16}}>Humidifier: </Text>
+                <Text style={{ color: isHumidifierEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                  {isHumidifierEnable ? "ON" : "OFF"}
+                </Text>
+              </View>
+
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isHumidifierEnable ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleHumidifierSwitch}
+                value={isHumidifierEnable}
+                disabled={isAutomaticEnable}
+              />
+            </View>
+          </View>
+
+          
         </View>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", display: isAutomaticEnable ? "none" : "flex"}}>
+          <View style={{flexDirection: "row", marginRight: "3%"}}>
+            <Text style={{fontSize: 16}}>Water Pump: </Text>
+            <Text style={{ color: isWaterPumpEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+              {isWaterPumpEnable ? "ON" : "OFF"}
+            </Text>
+          </View>
+
+          <Switch
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={isWaterPumpEnable ? '#f5dd4b' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleWaterPumpSwitch}
+            value={isWaterPumpEnable}
+            disabled={isAutomaticEnable}
+          />
+        </View>
+        
         
 
         <View
@@ -267,11 +404,11 @@ const App = () => {
             flexDirection: "row",
           }}
         >
-          <CircleText text="Temperature" value={temp+"°C"} onRed={temp < 20 || temp > 30 ? "" : "red"}/>
-          <CircleText text="Humidity" value={humidity+"%"} onRed={humidity < 70 || humidity > 85 ? "" : "red"} />
+          <CircleText text="Temperature" value={temp+"°C"} onRed={temp < 20 || temp > 30 ? "red" : ""}/>
+          <CircleText text="Humidity" value={humidity+"%"} onRed={humidity < 70 || humidity > 85 ? "red" : ""} />
           
         </View>
-        <CircleText text="CO2" value={co2+" PPM"} onRed={co2 < 500 || co2 > 1000 ? "" : "red"}  />
+        <CircleText text="CO2" value={co2+" PPM"} onRed={co2 < 400 || co2 > 1000 ? "red" : ""}  />
           
         
         <View
@@ -281,8 +418,8 @@ const App = () => {
           }}
         >
         
-        <LiquidGauge percentage={Math.round(water / 15 * 100)} onRed={water < 18 ? "#0099ff" : "red"}/>
-        <CircleText text="Water Level Distance" value={water === 0 ? 1 : water}  onRed={water < 18 ? "red" : ""} />
+        <LiquidGauge percentage={water > 1 && water <= 19 ? Math.round(water / 19 * 100) : 0} onRed={water < 6 || water > 14 ? "red" : "#0099ff"}/>
+        <CircleText text="Water Level" value={water > 1 && water <= 19 ? water : 0}  onRed={water < 6 || water > 12 ? "red" : ""} />
           
 
         </View>

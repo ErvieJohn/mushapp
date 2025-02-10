@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from "react-native";
 const CircleText = ({ text, value, onRed }) => {
   return (
     <View style={styles.circle} >
-      <Text style={onRed === "red" ? styles.textValue : styles.redValue}>{value}</Text>
+      <Text style={onRed === "red" ? styles.redValue : styles.textValue}>{value}</Text>
       <Text style={styles.text}>{text}</Text>
     </View>
   );
