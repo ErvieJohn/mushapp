@@ -9,19 +9,21 @@ import {
   Dimensions,
   Modal,
   Pressable,
-  Switch
+  Switch,
+  TouchableOpacity,
+  ActivityIndicator 
 } from "react-native";
 import CircleText from "./CircleText";
 import LiquidGauge from "./LiquidGauge";
 import { db, ref, onValue, set } from "./firebase";
 import bg from "./assets/bg2.png";
 import { Svg, Path } from "react-native-svg";
+// import Loader from "./Loader";
 
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
 
 const App = () => {
-  const [modalVisible, setModalVisible] = useState(false);
   const [water, setWater] = useState(0);
   const [humidity, setHumidity] = useState(0);
   const [temp, setTemp] = useState(0);
@@ -32,45 +34,91 @@ const App = () => {
   const [highCo2, setHighCo2] = useState(0);
   const [lowCo2, setLowCo2] = useState(0);
   const [co2, setCo2] = useState(0);
+  const [highPeltier, setHighPeltier] = useState(0);
+  const [lowPeltier, setLowPeltier] = useState(0);
+  const [peltier, setPeltier] = useState(0);
+
+  // LOADING
+  const [loading, setLoading] = useState(false);
+  const delaySec = 2000;
 
   // FAN
   const [isFanEnable, setIsFanEnable] = useState(false);
   const toggleFanSwitch = () => {
+    setLoading(true);
     set(ref(db, 'fan'), !isFanEnable);
     setIsFanEnable(!isFanEnable);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
   };
 
   // HEATER
   const [isHeaterEnable, setIsHeaterEnable] = useState(false);
   const toggleHeaterSwitch = () => {
+    setLoading(true);
     set(ref(db, 'heater'), !isHeaterEnable);
     setIsHeaterEnable(!isHeaterEnable);
+    
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
   };
 
   // FAN2
   const [isFan2Enable, setIsFan2Enable] = useState(false);
   const toggleFan2Switch = () => {
+    setLoading(true);
     set(ref(db, 'fan2'), !isFan2Enable);
     setIsFan2Enable(!isFan2Enable);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
   };
 
   // HUMIDIFIER
   const [isHumidifierEnable, setIsHumidifierEnable] = useState(false);
   const toggleHumidifierSwitch = () => {
+    setLoading(true);
     set(ref(db, 'humidifier'), !isHumidifierEnable);
     setIsHumidifierEnable(!isHumidifierEnable);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
   };
 
   // WATER PUMP
   const [isWaterPumpEnable, setIsWaterPumpEnable] = useState(false);
   const toggleWaterPumpSwitch = () => {
+    setLoading(true);
     set(ref(db, 'waterPump'), !isWaterPumpEnable);
     setIsWaterPumpEnable(!isWaterPumpEnable);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
+  };
+
+  // PELTIER
+  const [isPeltierEnable, setIsPeltierEnable] = useState(false);
+  const togglePeltierSwitch = () => {
+    setLoading(true);
+    set(ref(db, 'peltier'), !isPeltierEnable);
+    setIsPeltierEnable(!isPeltierEnable);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
   };
 
   // Automatic and Manual
   const [isAutomaticEnable, setIsAutomaticEnable] = useState(false);
   const toggleAutomaticSwitch = () => {
+    setLoading(true);
+
     set(ref(db, 'auto'), !isAutomaticEnable);
     setIsAutomaticEnable(!isAutomaticEnable);
 
@@ -88,9 +136,18 @@ const App = () => {
 
     set(ref(db, 'waterPump'), false);
     setIsWaterPumpEnable(false);
+
+    set(ref(db, 'peltier'), false);
+    setIsPeltierEnable(false);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
   };
 
   useEffect(() => {
+    setLoading(true);
+
     const data = ref(db);
 
     onValue(data, (snapshot) => {
@@ -98,6 +155,7 @@ const App = () => {
       setHumidity(snapshot.val().humid);
       setWater(Math.round(snapshot.val().water));
       setCo2(snapshot.val().co2);
+      setPeltier(snapshot.val().peltier);
 
       // FAN
       setIsFanEnable(snapshot.val().fan);
@@ -116,6 +174,9 @@ const App = () => {
 
       // Automatic
       setIsAutomaticEnable(snapshot.val().auto);
+
+      // PELTIER
+      setIsPeltierEnable(snapshot.val().peltier);
 
       setLowTemp(val => {
         if (snapshot.val().temp < val || val === 0) {
@@ -158,18 +219,27 @@ const App = () => {
         }
         return val;
       });
+
+      setLowPeltier(val => {
+        if (snapshot.val().peltier < val || val === 0) {
+          return snapshot.val().peltier;
+        }
+        return val;
+      });
+  
+      setHighPeltier(val => {
+        if (snapshot.val().peltier > val || val === 0) {
+          return snapshot.val().peltier;
+        }
+        return val;
+      });
     });
 
+    setTimeout(() => {
+      setLoading(false);
+    }, delaySec); // 3 seconds delay
     
   }, [db]);
-
-  // useEffect(()=> {
-  //   if(water >= 13){
-  //     setModalVisible(true)
-  //   }else{
-  //     setModalVisible(false)
-  //   }
-  // }, [water])
 
   return (
     <View
@@ -226,27 +296,6 @@ const App = () => {
             source={require("./assets/mushroom.png")}
           />
         </View>
-
-        {/* <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>WARNING</Text>
-            <Text style={styles.modalText}>Low Water Percentage, Please fill up the water tank!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Confirm</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal> */}
 
         <View>
           <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: 5}}>Parameters</Text>
@@ -334,6 +383,25 @@ const App = () => {
                 disabled={isAutomaticEnable}
               />
             </View>
+
+            {/* Peltier */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{flexDirection: "row", marginRight: "10%"}}>
+                <Text style={{fontSize: 16}}>Peltier: </Text>
+                <Text style={{ color: isPeltierEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                  {isPeltierEnable ? "ON" : "OFF"}
+                </Text>
+              </View>
+
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isPeltierEnable ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={togglePeltierSwitch}
+                value={isPeltierEnable}
+                disabled={isAutomaticEnable}
+              />
+            </View>
           </View>
 
           <View style={{flexDirection: "column", maxWidth: 150, minWidth: 150}}>
@@ -374,29 +442,30 @@ const App = () => {
                 disabled={isAutomaticEnable}
               />
             </View>
+
+            {/* Water Pump */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{flexDirection: "row", marginRight: "10%"}}>
+                <Text style={{fontSize: 16}}>Water Pump: </Text>
+                <Text style={{ color: isWaterPumpEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
+                  {isWaterPumpEnable ? "ON" : "OFF"}
+                </Text>
+              </View>
+
+              <Switch
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isWaterPumpEnable ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleWaterPumpSwitch}
+                value={isWaterPumpEnable}
+                disabled={isAutomaticEnable}
+              />
+            </View>
+            
           </View>
 
           
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", display: isAutomaticEnable ? "none" : "flex"}}>
-          <View style={{flexDirection: "row", marginRight: "3%"}}>
-            <Text style={{fontSize: 16}}>Water Pump: </Text>
-            <Text style={{ color: isWaterPumpEnable ? "blue" : "black", fontWeight: "bold", fontSize: 16}}>
-              {isWaterPumpEnable ? "ON" : "OFF"}
-            </Text>
-          </View>
-
-          <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor={isWaterPumpEnable ? '#f5dd4b' : '#f4f3f4'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleWaterPumpSwitch}
-            value={isWaterPumpEnable}
-            disabled={isAutomaticEnable}
-          />
-        </View>
-        
-        
 
         <View
           style={{
@@ -445,6 +514,9 @@ const App = () => {
           </Svg>
         </View>
       </ImageBackground>
+      {loading && <View style={styles.overlay}>
+        <ActivityIndicator size={50} color="#ffffff" />
+      </View>}
     </View>
   );
 };
@@ -509,6 +581,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
 
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject, // Covers full screen
+    backgroundColor: "rgba(0,0,0,0.5)", // Semi-transparent background
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
