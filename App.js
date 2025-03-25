@@ -487,8 +487,8 @@ const App = () => {
           }}
         >
         
-        <LiquidGauge percentage={water > 1 && water <= 19 ? Math.round(water / 19 * 100) : 0} onRed={water < 6 || water > 14 ? "red" : "#0099ff"}/>
-        <CircleText text="Water Level" value={water > 1 && water <= 19 ? water : 0}  onRed={water < 6 || water > 12 ? "red" : ""} />
+        <LiquidGauge percentage={water >= 1 && water <= 19 ? Math.round(water / 19 * 100) : 0} onRed={water < 6 || water > 12 ? "red" : "#0099ff"}/>
+        <CircleText text="Water Level" value={water >= 1 && water <= 19 ? water : 0}  onRed={water < 6 || water > 12 ? "red" : ""} />
           
 
         </View>
